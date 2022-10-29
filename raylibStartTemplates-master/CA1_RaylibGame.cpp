@@ -40,6 +40,7 @@ int main(){
 	InitWindow(800, 600, "Pong");
 	//set Window state makes sure that the refresh of the FPS stays inline with the computer refresh window rate.
 	SetWindowState(FLAG_VSYNC_HINT);
+	
 // float type because they dont always have to be integers.
 //.0f divides by a float
 //struct to define the ball.
