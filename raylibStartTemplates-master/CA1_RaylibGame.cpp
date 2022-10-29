@@ -25,7 +25,7 @@ struct Paddle
 
 	Rectangle GetRect()
 	{
-		return Rectangle{x - width/2, y -height/2, 10, 100};
+		return Rectangle{x - width/2, y -height/2, width, height};
 	}
 	void Draw()
 	{
@@ -63,7 +63,7 @@ int main(){
 	leftPaddle.y = GetScreenHeight()/2;
 	//width and height of the paddle.
 	leftPaddle.width = 10;
-	leftPaddle.height = 300;
+	leftPaddle.height = 100;
 	//Speed of the paddle.
 	leftPaddle.speed = 500;
 
@@ -125,6 +125,30 @@ if (ball.y > GetScreenHeight())
 	ball.y =GetScreenHeight();
 	// -1 reverses the ball.
 	ball.SpeedY *= -1;
+}
+
+//this code means that if the position of the right paddle on the y axis is less than 50 then it will stay the same.
+if (rightPaddle.y < rightPaddle.height/2)
+{
+	rightPaddle.y=rightPaddle.height/2;
+}
+
+//this is reverseing the above but it is getting the screen height of 800 and minusing 50.
+if (rightPaddle.y > GetScreenHeight() - rightPaddle.height/2)
+{
+	rightPaddle.y= GetScreenHeight() - rightPaddle.height/2;
+}
+
+//this code means that if the position of the left paddle on the y axis is less than 50 then it will stay the same.
+if (leftPaddle.y < leftPaddle.height/2)
+{
+	leftPaddle.y=leftPaddle.height/2;
+}
+
+//this is reverseing the above but it is getting the screen height of 800 and minusing 50.
+if (leftPaddle.y > GetScreenHeight() - leftPaddle.height/2)
+{
+	leftPaddle.y= GetScreenHeight() - leftPaddle.height/2;
 }
 
 if(IsKeyDown(KEY_W))
