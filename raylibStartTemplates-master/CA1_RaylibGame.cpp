@@ -29,7 +29,8 @@ struct Paddle
 	}
 	void Draw()
 	{
-		DrawRectangleRec(GetRect(), WHITE);
+		DrawRectangleGradientEx (GetRect(), LIME,LIME,RED,RED);
+	//DrawRectangleRec(GetRect(), WHITE);
 	};
 };
 
