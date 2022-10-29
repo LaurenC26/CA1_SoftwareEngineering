@@ -12,7 +12,7 @@ struct Ball
 	void Draw()
 	{
 //this code is drawing the ball and since we have defined the ball we just have to call the structs. 
-			DrawCircle((int) x, y,(int) radius, WHITE);
+			DrawCircle((int) x, y,(int) radius, GOLD);
 	}
 };
 //the struct code for the paddle.
@@ -29,8 +29,9 @@ struct Paddle
 	}
 	void Draw()
 	{
-		DrawRectangleGradientEx (GetRect(), LIME,LIME,RED,RED);
-	//DrawRectangleRec(GetRect(), WHITE);
+		//DrawRectangleGradientEx (GetRect(), LIME,LIME,RED,RED);
+	DrawRectangleRec(GetRect(), GOLD); 
+	//THE draw rectangle grad ex only needs the rec position and color.
 	};
 };
 
@@ -38,10 +39,22 @@ struct Paddle
 //The main function of the code.
 int main(){
 	//Window creating the window in vsc, gives the demensions and name. It also initializes a window.
-	InitWindow(800, 600, "Pong");
+	InitWindow(800, 450, "Pong");
 	//set Window state makes sure that the refresh of the FPS stays inline with the computer refresh window rate.
 	SetWindowState(FLAG_VSYNC_HINT);
-	
+
+	InitAudioDevice();
+	Music music =
+	LoadMusicStream("Resources/Music.wav");
+	PlayMusicStream (music);
+
+	Texture2D background = LoadTexture("resources/cyberpunk_street_background.png");
+    Texture2D midground = LoadTexture("resources/cyberpunk_street_midground.png");
+    Texture2D foreground = LoadTexture("resources/cyberpunk_street_foreground.png");
+
+    float scrollingBack = 0.0f;
+    float scrollingMid = 0.0f;
+    float scrollingFore = 0.0f;
 // float type because they dont always have to be integers.
 //.0f divides by a float
 //struct to define the ball.
@@ -88,6 +101,16 @@ int main(){
 //Render loop so that the window will not close automatically.
 	while (!WindowShouldClose())
 	{
+		UpdateMusicStream(music);
+
+		scrollingBack -= 0.1f;
+        scrollingMid -= 0.5f;
+        scrollingFore -= 1.0f;
+
+        // NOTE: Texture is scaled twice its size, so it sould be considered on scrolling
+        if (scrollingBack <= -background.width*2) scrollingBack = 0;
+        if (scrollingMid <= -midground.width*2) scrollingMid = 0;
+        if (scrollingFore <= -foreground.width*2) scrollingFore = 0;
 		//begins drawing
 		//BeginDrawing();
 		//draws a clear background
@@ -212,10 +235,23 @@ if (winnerText && IsKeyPressed(KEY_SPACE))
 
 BeginDrawing();
 		//draws a clear background//begins the rendering and creates a draw section.	
-			ClearBackground(BLACK);
+			ClearBackground(GetColor(0x052c46ff));
 //draws the fps rate if you hover it takes two arguments position x and y. X horizontal, y vertically. (0,0) 
 //corresponds to the left of the box. origin is the top left and y goes down as the number gets bigger.
+   // NOTE: Texture is scaled twice its size
+            DrawTextureEx(background, (Vector2){ scrollingBack, 20 }, 0.0f, 2.0f, WHITE);
+            DrawTextureEx(background, (Vector2){ background.width*2 + scrollingBack, 20 }, 0.0f, 2.0f, WHITE);
 
+            // Draw midground image twice
+            DrawTextureEx(midground, (Vector2){ scrollingMid, 20 }, 0.0f, 2.0f, WHITE);
+            DrawTextureEx(midground, (Vector2){ midground.width*2 + scrollingMid, 20 }, 0.0f, 2.0f, WHITE);
+
+            // Draw foreground image twice
+            DrawTextureEx(foreground, (Vector2){ scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
+            DrawTextureEx(foreground, (Vector2){ foreground.width*2 + scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
+
+            		
+			
 			ball.Draw();
 			//it will continue to draw the ball as it did.
 //For the rectangle the height is not centred, the circle draws from the centre where rectangle draws from the top left, to fix this you substract half of the height to put it as the center.
@@ -235,6 +271,11 @@ BeginDrawing();
 		EndDrawing();
 	
 	}
+  UnloadTexture(background);  // Unload background texture
+    UnloadTexture(midground);   // Unload midground texture
+    UnloadTexture(foreground);  // Unload foreground texture
+
+	CloseAudioDevice();
 //closes the window//de-initalizes the open window.
 	CloseWindow ();
 	return 0;
