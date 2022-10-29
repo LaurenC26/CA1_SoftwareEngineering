@@ -1,6 +1,7 @@
 #include "raylib.h"
 //this command allows VSC to include the Raylib Libray. 
 
+
 //struct is a collection of variables/functions/methods- this struct is to correct the ball within the Pong game. The void draw command allows the function to run continiously. 
 struct Ball
 {
@@ -39,14 +40,18 @@ struct Paddle
 //The main function of the code.
 int main(){
 	//Window creating the window in vsc, gives the demensions and name. It also initializes a window.
-	InitWindow(800, 450, "Pong");
+	InitWindow(800, 450, "CyberPong");
 	//set Window state makes sure that the refresh of the FPS stays inline with the computer refresh window rate.
 	SetWindowState(FLAG_VSYNC_HINT);
 
 	InitAudioDevice();
+	
 	Music music =
 	LoadMusicStream("Resources/Music.wav");
 	PlayMusicStream (music);
+
+	Sound soundPong =LoadSound ("Resources/sound.rfx.wav");
+	Sound winSound =LoadSound ("Resources/win.wav");
 
 	Texture2D background = LoadTexture("resources/cyberpunk_street_background.png");
     Texture2D midground = LoadTexture("resources/cyberpunk_street_midground.png");
@@ -55,6 +60,7 @@ int main(){
     float scrollingBack = 0.0f;
     float scrollingMid = 0.0f;
     float scrollingFore = 0.0f;
+	bool scored = false;
 // float type because they dont always have to be integers.
 //.0f divides by a float
 //struct to define the ball.
@@ -196,32 +202,47 @@ if(IsKeyDown(KEY_DOWN))
 	rightPaddle.y += rightPaddle.speed * GetFrameTime();
 }
 
+	
 if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,leftPaddle.GetRect()))
 {
 	if(ball.SpeedX < 0)
 	{
 	ball.SpeedX *= -1.1f;
 	ball.SpeedY = (ball.y -leftPaddle.y) / (leftPaddle.height/2) * ball.SpeedX;
+	PlaySound(soundPong);
 	}
 }
 
+	
 if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,rightPaddle.GetRect()))
 {
 	if(ball.SpeedX> 0)
 	{
 	ball.SpeedX *= -1.1f;
 	ball.SpeedY = (ball.y -rightPaddle.y) / (rightPaddle.height/2) * -ball.SpeedX;
+	PlaySound(soundPong);
 	}
 }
+
 
 if(ball.x<0)
 {
 	winnerText = "Right Player Wins!";
+	
+	if (scored ==false){
+		PlaySound(winSound);
+	}
+	scored = true;
 }
+
 
 if(ball.x > GetScreenWidth())
 {
 	winnerText = "Left Player Wins!";
+	if (scored ==false){
+		PlaySound(winSound);
+	}
+	scored = true;
 }
 
 if (winnerText && IsKeyPressed(KEY_SPACE))
@@ -231,6 +252,8 @@ if (winnerText && IsKeyPressed(KEY_SPACE))
 	ball.SpeedX = 300;
 	ball.SpeedY = 300;
 	winnerText = nullptr;
+	scored = false;
+	StopSound(winSound);
 }
 
 BeginDrawing();
@@ -261,9 +284,10 @@ BeginDrawing();
 			if (winnerText)
 			{
 				int textWidth = MeasureText(winnerText, 60);
-				DrawText (winnerText, GetScreenWidth() / 2 -textWidth / 2, GetScreenHeight() / 2 -30, 60, YELLOW);
+				DrawText (winnerText, GetScreenWidth() / 2 -textWidth / 2, GetScreenHeight() / 2 -30, 60, YELLOW);		
 			}
-//for width subtract 50 cuz we want to draw it 50 from the right but it draws from the left and not the center we also need to substract the width, it will make it so that the right of the right is 50 away from the width.
+
+			//for width subtract 50 cuz we want to draw it 50 from the right but it draws from the left and not the center we also need to substract the width, it will make it so that the right of the right is 50 away from the width.
 			//DrawRectangle (GetScreenWidth()/2 -50 -10, GetScreenHeight()/2-50, 10, 100, WHITE);
 //only drawn in one position, to move we have to replace the constants with variables. 
 			DrawFPS(10,10);
