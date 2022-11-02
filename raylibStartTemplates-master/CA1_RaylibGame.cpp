@@ -10,10 +10,10 @@ struct Ball
 	float SpeedX, SpeedY;
 	float radius;
 
-	void Draw()
+	void Draw(Color ballColor)
 	{
 //this code is drawing the ball and since we have defined the ball we just have to call the structs. 
-			DrawCircle((int) x, y,(int) radius, RAYWHITE);
+			DrawCircle((int) x, y,(int) radius, ballColor);
 	}
 };
 //the struct code for the paddle.
@@ -56,6 +56,10 @@ int main(){
 	Texture2D background = LoadTexture("resources/cyberpunk_street_background.png");
     Texture2D midground = LoadTexture("resources/cyberpunk_street_midground.png");
     Texture2D foreground = LoadTexture("resources/cyberpunk_street_foreground.png");
+
+	Color colors[] = {PINK, YELLOW, GREEN, BLUE, WHITE};
+	//this is just a position in colors
+	int currentColorIndex = 0;
 	//adding floats
     float scrollingBack = 0.0f;
     float scrollingMid = 0.0f;
@@ -214,6 +218,7 @@ int main(){
 					rightPaddle.y += rightPaddle.speed/2 * GetFrameTime();
 				}
 			}
+				int len = sizeof(colors) / sizeof(colors[0]);
 				
 			if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,leftPaddle.GetRect()))
 			{
@@ -222,6 +227,13 @@ int main(){
 				ball.SpeedX *= -1.1f;
 				ball.SpeedY = (ball.y -leftPaddle.y) / (leftPaddle.height/2) * ball.SpeedX;
 				PlaySound(soundPong);
+				if (currentColorIndex == len-1){
+					currentColorIndex = 0;
+				}
+				else
+				{
+					currentColorIndex += 1;
+				}
 				}
 			}
 
@@ -233,6 +245,13 @@ int main(){
 				ball.SpeedX *= -1.1f;
 				ball.SpeedY = (ball.y -rightPaddle.y) / (rightPaddle.height/2) * -ball.SpeedX;
 				PlaySound(soundPong);
+				if (currentColorIndex == len-1){
+					currentColorIndex = 0;
+				}
+				else
+				{
+					currentColorIndex += 1;
+				}
 				}
 			}
 
@@ -287,7 +306,7 @@ int main(){
 
             		
 			if(started == true){
-				ball.Draw();
+				ball.Draw(colors[currentColorIndex]);
 				//it will continue to draw the ball as it did.
 				//For the rectangle the height is not centred, the circle draws from the centre where rectangle draws from the top left, to fix this you substract half of the height to put it as the center.
 				leftPaddle.Draw();
@@ -318,7 +337,7 @@ int main(){
 		EndDrawing();
 	
 	}
-  UnloadTexture(background);  // Unload background texture
+    UnloadTexture(background);  // Unload background texture
     UnloadTexture(midground);   // Unload midground texture
     UnloadTexture(foreground);  // Unload foreground texture
 
